@@ -3,7 +3,7 @@ CS 184 Final Project
 
 <h1 align="middle">CS 184: Computer Graphics and Imaging, Spring 2023</h1>
     <br>
-    <img src="render1.png" style="display:block; width: 60%; margin-left:auto; margin-right:auto;"/>
+    <img src="render1.png" class="center"/>
     <h1 align="middle">Final Project: Font Rendering Engine</h1>
     <h2 align="middle">James MacFadyen, James Gersbach, CJ Hines, and Brian Santoso</h2>
     <p align="middle">See <a href="https://docs.google.com/presentation/d/1hLsOYjvpz6S-rDLRNTochSNVQFm8AlVthpq2-A-JmOM/edit?usp=sharing" target="_blank">slides</a> and <a href="https://youtu.be/ocB_TURlIUI" target="_blank">video summary</a>.</p>
