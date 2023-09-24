@@ -1,0 +1,180 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<style>
+  body {
+    padding: 50px;
+    max-width: 800px;
+    margin: auto;
+    text-align: left;
+    font-weight: 300;
+    font-family: 'Open Sans', sans-serif;
+    color: #121212;
+  }
+  h1, h2, h3, h4 {
+    font-family: 'Source Sans Pro', sans-serif;
+  }
+  table {
+    border-spacing: 20px;
+  }
+  figcaption {
+    font-size: 12px;
+  }
+</style>
+<title>CS 184 Final Project</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<link href="https://fonts.googleapis.com/css?family=Open+Sans|Source+Sans+Pro" rel="stylesheet">
+
+<script>
+  MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']]
+    }
+  };
+</script>
+<script id="MathJax-script" async
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js">
+</script>
+</head>
+
+
+<body>
+
+    <h1 align="middle">CS 184: Computer Graphics and Imaging, Spring 2023</h1>
+    <br>
+    <img src="render1.png" style="display:block; width: 60%; margin-left:auto; margin-right:auto;"/>
+    <h1 align="middle">Final Project: Font Rendering Engine</h1>
+    <h3 align="middle">James MacFadyen, James Gersbach, CJ Hines, and Brian Santoso</h2>
+
+      <p align="middle">See <a href="https://docs.google.com/presentation/d/1hLsOYjvpz6S-rDLRNTochSNVQFm8AlVthpq2-A-JmOM/edit?usp=sharing" target="_blank">slides</a> and <a href="https://youtu.be/ocB_TURlIUI" target="_blank">video summary</a>.</p>
+
+    <h3 align="middle">Abstract</h2>
+    
+      <p>
+        We built a font rendering engine in rust for our final project employing two external libraries, ttf_parser and rust-sdl2. The engine utilized Bezier curves from a ttf file to generate glyphs, which were then assembled using ray intersections to form readable sentences and paragraphs. Our implementation also delivers modes for supersampling and tracks performance metrics to ensure efficient rendering. Overall, the project aimed to create a high-quality font rendering engine that could generate legible text in various fonts with accurate tracking.
+      </p>
+    
+    <h3 align="middle">Technical approach</h3>
+
+      <p>The first stage of the render is to translate the segments that <code>ttf_parser</code> returns into something usable (making the points not relative to the previous segment and storing them in a vector for convenence). Next, we decide how many pixels on the target display our render will take up. We use the formula <code>ratio = point_size * resolution / (72 * units_per_em)</code>, where <code>point_size</code> is how big we want the characters to appear on the display (12 pt, 24 pt, and so on), <code>resolution</code> is the pixel density of the target display (144 or 227 on a recent MacBook, for reference), and <code>units_per_em</code> is how many font units translate into a font point. The <code>72</code> in the denominator refers to how 72 pixels-per-inch displays were almost universal at the time of the TTF specification, and <code>units_per_em</code> is defined based on that pixel density. With this, we simply multiply the height and width of the character's bounding box by <code>ratio</code> to get the number of pixels our character needs.</p>
+
+      <p>The second stage of the render is to iterate over each pixel we have decided our character will take up. How we decide to fill a pixel will depend on our sampling mode. Without supersampling, we simply sample from the middle of the pixel and fill it in with black if the sample point is within the outline of the character (the formula for this will be described in the next paragraph). With supersampling, we take $N^2$ evenly spaced points within the pixel. The shading of the pixel is decided by how many of these points are within the outline: fully white if none of the samples are in-bounds and fully black if all $N^2$ samples are in-bounds.</p>
+
+      <p>To test whether a sample point is in-bounds (within the filled-in portion of the character), we have to compare it against every segment that makes up the character. We draw a ray originating from the sample point with an arbitrary direction (we picked $(1, 0)$) and count the number of segments it intersects with. If the number is odd, we fill in the point. While the selection of direction $(1, 0)$ for the ray was arbitrary, it ended up saving us time down the line: Given a Bezier curve with points $(x_i, y_i)$ and a test point $(x, y)$, if we translate the curve to $(x_i - x, y_i - y)$ then we can simply find all solutions to $B_y(t) = 0$. This simplifies the Bezier-Ray intersection problem into a straightforward root-finding exercise, where the intersection is valid if it has any solutions where $t \geq 0$.</p>
+      
+      <p>To render paragraphs, we render sequences of characters with each glyph's location determined by the bounding box of the previous character plus an offset. If the position of the next character to be drawn exceeds the bounding box of the drawing area, we insert a new line and resume drawing characters there.</p>
+
+      <p>We also provide some metrics to compare the quality of different rendering modes (default sampling, 2x2, 3x3, etc.). We first pick a sample character and a number of samples to take from within the character's bounding box (we used 10,000). We then find a random point within the box. We test if that point would be considered in-bounds (i.e. in the filled-in portion of the outline) at the random point and at the nearest sampling point in the different sample methods. For example, if we generated the random point $(3.2, 5.8)$ we would sample from $(3.5, 5.5)$ for default sampling and $(3.33, 5.66)$ for 2x2 supersampling. If the random point and the corresponding sample point agree on whether their points are in-bounds, this is a hit. If they disagree, this is a miss. We count the number of misses for each sampling method, where less misses indicates that a rendering method produces an image that is closer to the ideal representation of the character. A table containing metrics for a selection of fonts (sans-serif, script, and CJK) and characters is provided in the Results section of this report.</p>
+
+      <p>The main roadblock we encountered was the difficulty in juggling the different coordinate systems used in this project. Not only is the conversion between font units and pixels display-dependent (as we need to know how many pixels there are per inch in order to create pixel-perfect outputs), but the two systems use different origins: (0, 0) is in the top-left for the renderer and the bottom-left for the actual font file. To understand the conversion, we had to trace out a simple character (in our case, 'L') on a graph and work out how each corner of the character translates to a different scale and origin.</p>
+
+      <p>In building this font rendering engine, we gained a deep appreciation for the complexity that goes into something that we barely (if ever) think about when we use computers or read printed media. The best font rendering engine is one that very few people will ever acknowledge: If the engine is working well, no one thinks to thank its authors for their excellent reading experience. But if it performs poorly, people will quickly wonder why someone delivered software where the letters are jagged or blurry. Because of this, font rendering is concentrated in a small number of battle-tested engines (primarily FreeType) that have had decades to meet the incredible challenge of making software that no one will notice.</p>
+
+    <h3 align="middle">Results</h3>
+
+    <u>Render Images</u>
+    <div text-align="middle">
+      <table width="100%">
+        <tr>
+          <td>
+            <img src="dancing.png" align="middle" width="100%"/>
+            <figcaption align="middle">  Font = Dancing Script Regular. Supersampling 3x3. </figcaption>
+          </td>
+          <td>
+            <img src="chopin.png" align="middle" width="100%"/>
+            <figcaption align="middle"> Font = Chopin Script. Supersampling 3x3. </figcaption>
+          </td>
+        </tr>
+        <br>
+        <tr>
+          <td>
+            <img src="roboto.png" align="middle" width="100%"/>
+            <figcaption align="middle"> Font = Roboto Regular. Supersampling 3x3. </figcaption>
+          </td>
+          <td>
+            <img src="pacifico.png" align="middle" width="100%;"/>
+            <figcaption align="middle"> Font = Pacifico Regular. Supersampling 3x3. </figcaption>
+          </td>
+        </tr>
+        <br>
+        <tr>
+          <td>
+            <img src="darum.png" align="middle" width="100%"/>
+            <figcaption align="middle"> Font = DarumadropOne Regular. Supersampling 3x3. </figcaption>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <br>
+
+    <u>Render Gifs</u>
+    <div></div>
+    <br>
+        <img src="ttfnone.gif" style="width:100%; height:80%;"/>
+        <figcaption style="text-align:center"> No SuperSampling </figcaption>
+        <br>
+        <img src="ttf2x2.gif" style="width:100%; height:80%;"/>
+        <figcaption style="text-align:center"> SuperSampling 2x2 </figcaption>
+        <br>
+        <img src="ttf3x3.gif" style="width:100%; height:80%;"/>
+        <figcaption style="text-align:center"> SuperSampling 3x3 </figcaption>
+
+      <br>
+      <u>Metrics</u>
+      <br>
+
+      <p>We describe our mechanism for deriving metrics in the Technical Approach section of this writeup. "NxN" refers to sampling from $N^2$ evenly-spaced points within the pixel.</p>
+
+      <table style="margin:auto">
+        <tr>
+          <th></th>
+          <th>1x1</th>
+          <th>2x2</th>
+          <th>3x3</th>
+          <th>4x4</th>
+        </tr>
+        <tr>
+          <th>Dancing Script 'W'</th>
+          <td>44</td>
+          <td>16</td>
+          <td>11</td>
+          <td>10</td>
+        </tr>
+        <tr>
+          <th>Darumadrop 'お'</th>
+          <td>58</td>
+          <td>30</td>
+          <td>17</td>
+          <td>17</td>
+        </tr>
+        <tr>
+          <th>Pacifico 'h'</th>
+          <td>36</td>
+          <td>19</td>
+          <td>12</td>
+          <td>7</td>
+        </tr>
+      </table>
+      <figcaption style="text-align:center">Incorrectly-classified samples out of 10,000 (lower is better)</figcaption>
+
+      <p>As one might expect, the most dramatic improvement came from switching from default sampling to 2x2 supersampling. 3x3 supersampling provided a small improvement, and may be worthwhile in cases like printed text where the render time is unimportant. 4x4 supersampling did not provide a significant benefit.</p>
+
+    <h3 align="middle">References</h3>
+
+      <ul>
+        <li><a href="https://developer.apple.com/fonts/TrueType-Reference-Manual/" target="_blank">TrueType Reference Manual</a>: provides the general algorithm for deciding whether or not to fill in a pixel and the formula to convert from font units (an arbitrary unit that is decided by the font designer) to pixel units (which are dependent on the pixel density of the target display).</li>
+        <li><a href="https://math.stackexchange.com/questions/4225469/number-of-quadratic-bezier-curve-ray-intersections" target="_blank">Number of Quadratic Bezier Curve-Ray Intersections</a>: Suggests a clever method to efficiently calculate the intersection time $t$, by offsetting the entire curve such that the ray we are testing it against has origin $(0, 0)$ and direction $(1, 0)$. With this, we can isolate the y-axis component of the curve and solve $B_y(t) = 0$, which we can use a root solver for.</li>
+        <li><a href="https://github.com/RazrFalcon/ttf-parser" target="_blank">ttf_parser</a>: a Rust library that takes in a <code>.ttf</code> file and returns the segments that comprise a given character and the bounding box of the character. Its output is in font units, which we need to convert back to pixels.</li>
+        <li><a href="https://github.com/Rust-SDL2/rust-sdl2" target="_blank">rust-sdl2</a>: Rust bindings for the SDL2 media library. We exclusively used its <code>draw_point</code> and <code>draw_rect</code> functions to produce our output.</li>
+        <li><a href="https://github.com/vorot/roots" target="_blank">roots</a>: root-finding library for Rust.</li>
+      </ul>
+
+    <h3 align="middle">Contributions</h3>
+
+      <p>James MacFadyen: I wrote the skeleton code that integrated with our two primary external libraries (<code>ttf_parser</code> and <code>rust-sdl2</code>), as well as support for testing ray-quadratic Bezier intersections. I also worked on metrics with James Gersbach, and wrote the technical overview for the writeup (save for the section on paragraph rendering, which was written by Brian Santoso).</p>
+      <p>James Gersbach: I implemented supersampling and worked with James MacFadyen to create the metrics framework.</p>
+      <p>CJ Hines: I worked on implementing drawing points in the curve, supersampling, and centering the text in the render window. I contributed to the final deliverables through the webpage and presentation slides. </p>
+      <p>Brian Santoso: I wrote the ray-line segment intersection test, the ray-cubic Bezier intersection test, and the multi-character (paragraph) render mode.</p>
+
+</body>
+</html>

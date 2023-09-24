@@ -1,0 +1,73 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<style>
+  body {
+    padding: 50px;
+    max-width: 600px;
+    margin: auto;
+    text-align: left;
+    font-weight: 300;
+    font-family: 'Open Sans', sans-serif;
+    color: #121212;
+  }
+  h1, h2, h3, h4 {
+    font-family: 'Source Sans Pro', sans-serif;
+  }
+</style>
+<title>Final Project Checkpoint</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<link href="https://fonts.googleapis.com/css?family=Open+Sans|Source+Sans+Pro" rel="stylesheet">
+</head>
+
+
+<body>
+
+    <h1 align="middle">CS 184: Computer Graphics and Imaging, Spring 2023</h1>
+    <h1 align="middle">Final Project: Font Rendering Engine</h1>
+    <h3 align="middle">James MacFadyen, James Gersbach, CJ Hines, and Brian Santoso</h2>
+
+    <p align="middle">See <a href="https://docs.google.com/presentation/d/15G8Gb9AcqGuDJcYTrnywtJFlm8f0HttgiGO4DKSviUk/edit?usp=sharing">slides</a> and <a>video summary</a>.</p>
+
+    <h3 align="middle">Summary</h2>
+
+    <p>As of the time of this milestone, we have completed much of the groundwork needed for the final rendering system. This includes reformatting the data from our TTF parsing libary into something more usable for our project, setting up an SDL2 renderer, and establishing the framework for how we will evaluate whether a point is within the drawn portion of a character. Under the amended schedule provided below, we still need to complete:</p>
+
+    <ul>
+      <li>The ray-curve intersection formula</li>
+      <li>The ray-line intersection formula</li>
+      <li>Supersampling</li>
+      <li>Performance metrics</li>
+    </ul>
+    
+    <h3 align="middle">Preliminary results</h2>
+
+    <p>TODO</p>
+
+    <h3 align="middle">Reflection on progress</h2>
+
+    <p>We have run into some obstacles with maintaining the schedule laid out in our proposal, with single-character rendering still in-progress. Much of this delay came from the difficulties of adapting to the quirks of Rust (e.g. ownership) and the Rust community (e.g. having awful documentation). Eventually we were able to find barebones examples of ttf_parser and rust-sdl2 in use that we could heavily adapt to the purposes of our final project.</p>
+
+    <p>The second major obstacle to the single-character rendering implementation is the vagueness of existing documentation. Apple's reference, the authoritative source for the TTF format, has a handful of insufficient explanations in essential equations and critical implementation details. The formula to convert from abstract font units to pixels on screen, which is necessary for creating clear renders, has some details which we have had to approximate via trial-and-error. More importantly, we have struggled to find a functional algorithm for Bézier curve-ray intersection that provides (1) whether the ray intersects the curve between the outermost control points and (2) whether the origin of that ray is to the left or to the right of the curve. Once we find definite answers to these, single-character rendering will take less than a day of work.</p>
+
+    <h3 align="middle">Amended Schedule</h3>
+
+    <ul>
+        <li>Next four days:
+            <ul>
+                <li>Ray-Line and Ray-Bézier collision algorithms</li>
+                <li>Single-character rendering</li>
+            </ul>
+        </li>
+        <li>Remaining time:
+            <ul>
+                <li>Supersampling</li>
+                <li>Performance metrics</li>
+            </ul>
+        </li>
+    </ul>
+
+    <p>Paragraph rendering will be added back to this schedule if time allows, but this close to the deadline we want to focus on what we can more confidently say we can complete in this time.</p>
+
+</body>
+</html>

@@ -1,0 +1,12 @@
+/Users/cj/Desktop/ttf-test/target/debug/deps/version_compare-a124adcd6b027005.rmeta: /Users/cj/.cargo/registry/src/github.com-1ecc6299db9ec823/version-compare-0.1.1/src/lib.rs /Users/cj/.cargo/registry/src/github.com-1ecc6299db9ec823/version-compare-0.1.1/src/cmp.rs /Users/cj/.cargo/registry/src/github.com-1ecc6299db9ec823/version-compare-0.1.1/src/compare.rs /Users/cj/.cargo/registry/src/github.com-1ecc6299db9ec823/version-compare-0.1.1/src/manifest.rs /Users/cj/.cargo/registry/src/github.com-1ecc6299db9ec823/version-compare-0.1.1/src/part.rs /Users/cj/.cargo/registry/src/github.com-1ecc6299db9ec823/version-compare-0.1.1/src/version.rs
+
+/Users/cj/Desktop/ttf-test/target/debug/deps/libversion_compare-a124adcd6b027005.rlib: /Users/cj/.cargo/registry/src/github.com-1ecc6299db9ec823/version-compare-0.1.1/src/lib.rs /Users/cj/.cargo/registry/src/github.com-1ecc6299db9ec823/version-compare-0.1.1/src/cmp.rs /Users/cj/.cargo/registry/src/github.com-1ecc6299db9ec823/version-compare-0.1.1/src/compare.rs /Users/cj/.cargo/registry/src/github.com-1ecc6299db9ec823/version-compare-0.1.1/src/manifest.rs /Users/cj/.cargo/registry/src/github.com-1ecc6299db9ec823/version-compare-0.1.1/src/part.rs /Users/cj/.cargo/registry/src/github.com-1ecc6299db9ec823/version-compare-0.1.1/src/version.rs
+
+/Users/cj/Desktop/ttf-test/target/debug/deps/version_compare-a124adcd6b027005.d: /Users/cj/.cargo/registry/src/github.com-1ecc6299db9ec823/version-compare-0.1.1/src/lib.rs /Users/cj/.cargo/registry/src/github.com-1ecc6299db9ec823/version-compare-0.1.1/src/cmp.rs /Users/cj/.cargo/registry/src/github.com-1ecc6299db9ec823/version-compare-0.1.1/src/compare.rs /Users/cj/.cargo/registry/src/github.com-1ecc6299db9ec823/version-compare-0.1.1/src/manifest.rs /Users/cj/.cargo/registry/src/github.com-1ecc6299db9ec823/version-compare-0.1.1/src/part.rs /Users/cj/.cargo/registry/src/github.com-1ecc6299db9ec823/version-compare-0.1.1/src/version.rs
+
+/Users/cj/.cargo/registry/src/github.com-1ecc6299db9ec823/version-compare-0.1.1/src/lib.rs:
+/Users/cj/.cargo/registry/src/github.com-1ecc6299db9ec823/version-compare-0.1.1/src/cmp.rs:
+/Users/cj/.cargo/registry/src/github.com-1ecc6299db9ec823/version-compare-0.1.1/src/compare.rs:
+/Users/cj/.cargo/registry/src/github.com-1ecc6299db9ec823/version-compare-0.1.1/src/manifest.rs:
+/Users/cj/.cargo/registry/src/github.com-1ecc6299db9ec823/version-compare-0.1.1/src/part.rs:
+/Users/cj/.cargo/registry/src/github.com-1ecc6299db9ec823/version-compare-0.1.1/src/version.rs:

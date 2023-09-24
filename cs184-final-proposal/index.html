@@ -1,0 +1,107 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<style>
+  body {
+    padding: 50px;
+    max-width: 600px;
+    margin: auto;
+    text-align: left;
+    font-weight: 300;
+    font-family: 'Open Sans', sans-serif;
+    color: #121212;
+  }
+  h1, h2, h3, h4 {
+    font-family: 'Source Sans Pro', sans-serif;
+  }
+</style>
+<title>Final Project Proposal</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<link href="https://fonts.googleapis.com/css?family=Open+Sans|Source+Sans+Pro" rel="stylesheet">
+</head>
+
+
+<body>
+
+    <h1 align="middle">CS 184: Computer Graphics and Imaging, Spring 2023</h1>
+    <h1 align="middle">Final Project: A Fast and Flexible Font Rendering Engine</h1>
+    <h3 align="middle">James MacFadyen, James Gersbach, CJ Hines, and Brian Santoso</h2>
+
+    <p>We intend to build a font rendering engine for our final project. Our engine will take the Bezier curves from a ttf file, generate the corresponding glyphs, and assemble them in order to build legible sentences and paragraphs.</p>
+
+    <div>
+
+    <h3 align="middle">Problem description</h2>
+    <p>Font rendering is a fundamental aspect of how we interact with computers, e-readers, and more. We want our project to serve as a modern rendering engine in as many ways as possible, with particular emphasis on antialiasing and performance. The rendering engine should be able to cover use cases ranging from a modern, high-DPI display (where antialiasing is almost unnecessary) to a low-DPI terminal-style interface (where antialiasing is essential to be able to read the text). As a general outline, our engine will need to (1) parse the Bezier curves and turn them into an outline of the glyphs we will render, (2) convert this outline into a rendered glyph, and (3) assemble the glyphs into words and sentences. It will need to be able to do this in real-time in response to user inputs.</p>
+
+    <h3 align="middle">Deliverables</h2>
+
+    <p>In general, we will demonstrate our engine by showing font renders taken under different conditions such as font size and display type (if we implement subpixel rendering). We will also use two metrics that allow us to measure how the inclusion of different features affects both the visual fidelity and performance of our engine.</p>
+
+    <p>In order to judge how different features affect the quality of the output, we will apply a test similar to the following: Given a box surrounding a drawn character, sample 1000 points within the box. We will compare our render to an “ideal” render of the same character (vector instead of rasterized). A sample point that is inside the drawn portion of both our drawn character and the ideal render will be considered correct, and our rendering will be judged by how many sample points are correctly classified. We may expand upon this later to give more accurate ratings for antialiased renderings.</p>
+
+    <p>Since we also want to be able to render updating text at real-time speeds, we will also analyze the performance of our font engine. We will focus on two aspects: time-to-draw and time-to-redraw. The first judges how long it takes to draw a body of text from scratch. The second judges how long it takes to redraw a body of text that has already been rendered after a change to the text being rendered or a change to the aspect ratio of the render window. The ratio between the two will help us understand how much time our partial re-rendering is saving us.</p>
+
+    <p>Beyond the essential features like legible layouts, antialiasing via supersampling, and high performance, we have additional features we want to implement to achieve our goal of a fleshed-out and flexible rendering system. The first is subpixel rendering, in which we take advantage of the fact that the red, blue, and green lights in a pixel occupy different spaces and can be used to boost the effective resolution of our render without increasing the actual resolution. The second is font hinting, where a ttf contains information about how the pixels of a glyph render should be aligned with the grid of display pixels. While the importance of both features have diminished over the years as high-DPI (“retina”) displays have become commonplace, we still want to include them for the sake of comprehensiveness. In addition, we hope to be able to support adjusting the window size while requiring only a partial redraw (i.e. not a full render), as many text editors still seem to struggle with this.</p>
+
+    <h3 align="middle">Schedule</h3>
+
+    <ul>
+        <li>Week 1:
+            <ul>
+                <li>Single-character rendering</li>
+                <li>Basic antialiasing</li>
+                <li>Start layout</li>
+            </ul>
+        </li>
+        <li>Week 2:
+            <ul>
+                <li>Proper layouts</li>
+                <li>Start subpixel rendering</li>
+            </ul>
+        </li>
+        <li>Week 3:
+            <ul>
+                <li>Multi-mode subpixel rendering</li>
+                <li>Partial re-rendering</li>
+                <li>Performance analysis</li>
+            </ul>
+        </li>
+        <li>Week 4:
+            <ul>
+                <li>Presentation & writeup</li>
+                <li>Additional features (e.g. font hinting)</li>
+            </ul>
+        </li>
+    </ul>
+
+    <h3 align="middle">Resources</h3>
+
+    <ul>
+        <li>Software:
+            <ul>
+                <li><a href="https://github.com/RazrFalcon/ttf-parser">ttf_parser</a> to extract points from bezier curves</li>
+                <li><a href="https://www.libsdl.org">SDL2</a> to render pixels to the window. We will not be using any of its built-in font rendering functions. Since this library has bindings for many common languages, we can still use it if we end up changing the curve extraction library or language we write our code in.</li>
+                <li>Code will be written in Rust (assuming we go with ttf_parser) and run on our personal machines</li>
+            </ul>
+        </li>
+        <li>Papers & books:
+            <ul>
+                <li><a href="https://ieeexplore.ieee.org/document/667294?arnumber=667294">“History and technology of computer fonts”</a></li>
+                <li><a href="https://jankautz.com/publications/SubpixelCGF13.pdf">“Low-cost Subpixel Rendering for Diverse Displays”</a></li>
+                <li><a href="http://ronaldperry.org/SaffronTechDocs/Saffron_Paper_SIGGRAPH_Submission.pdf">“A New Framework for Representing, Rendering, Editing, and Animating Type”</a></li>
+                <li><a href="https://libgen.fun/book/index.php?md5=6212CE2AB9A5EA42A8476BD435D68362">“Solving the nearest-point-on-curve problem”</a> from Graphic Gems Vol. 1, pg 607</li>
+            </ul>
+        </li>
+        <li>Online resources:
+            <ul>
+                <li><a href="https://developer.apple.com/fonts/TrueType-Reference-Manual/">TrueType Reference Manual</a> - explains the (many) tables that make up a TTF font</li>
+                <li><a href="https://jdhao.github.io/2018/11/27/font_shape_mathematics_bezier_curves/">“The Mathematics behind Font Shapes --- Bézier Curves and More”</a></li>
+                <li><a href="https://www.youtube.com/watch?v=caLqFG6w4Mk">“True Type Font(.TTF) Parsing and rendering in OpenGL from scratch“</a> - offers a high-level overview of how you can draw TTFs yourself (though the comments seem to indicate that the method they use is very inefficient)</li>
+                <li><a href="http://boxbase.org/entries/2017/jul/3/easy-text-rendering-with-vulkan/">“Easy text rendering with Vulkan”</a> - another approach to the same thing</li>
+            </ul>
+        </li>
+    </ul>
+    
+</body>
+</html>
